@@ -1,0 +1,58 @@
+{
+  "xsappname": "xsuaa-pg-nextjs",
+  "tenant-mode": "dedicated",
+  "scopes": [
+    {
+      "name": "$XSAPPNAME.read",
+      "description": "Read access"
+    },
+    {
+      "name": "$XSAPPNAME.write",
+      "description": "Write access"
+    },
+    {
+      "name": "$XSAPPNAME.admin",
+      "description": "Admin access"
+    }
+  ],
+  "attributes": [],
+  "role-templates": [
+    {
+      "name": "Viewer",
+      "description": "View data",
+      "scope-references": ["$XSAPPNAME.read"]
+    },
+    {
+      "name": "Editor",
+      "description": "Edit data",
+      "scope-references": ["$XSAPPNAME.read", "$XSAPPNAME.write"]
+    },
+    {
+      "name": "Administrator",
+      "description": "Full access",
+      "scope-references": ["$XSAPPNAME.read", "$XSAPPNAME.write", "$XSAPPNAME.admin"]
+    }
+  ],
+  "role-collections": [
+    {
+      "name": "xsuaa-pg-nextjs-viewer",
+      "description": "Viewer role collection",
+      "role-template-references": ["$XSAPPNAME.Viewer"]
+    },
+    {
+      "name": "xsuaa-pg-nextjs-editor",
+      "description": "Editor role collection",
+      "role-template-references": ["$XSAPPNAME.Editor"]
+    },
+    {
+      "name": "xsuaa-pg-nextjs-admin",
+      "description": "Admin role collection",
+      "role-template-references": ["$XSAPPNAME.Administrator"]
+    }
+  ],
+  "oauth2-configuration": {
+    "redirect-uris": [
+      "https://*.cfapps.*.hana.ondemand.com/**"
+    ]
+  }
+}

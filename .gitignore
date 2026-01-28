@@ -32,6 +32,17 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
+
+# SAP BTP local development
+default-env.json
+
+# Drizzle - keep migrations, ignore meta
+drizzle/meta/
+
+# MTA build artifacts
+mta_archives/
+.xsuaa-pg-nextjs_mta_build_tmp/
 
 # vercel
 .vercel

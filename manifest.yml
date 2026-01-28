@@ -1,0 +1,17 @@
+---
+applications:
+  - name: xsuaa-pg-nextjs
+    memory: 512M
+    disk_quota: 1G
+    instances: 1
+    buildpacks:
+      - nodejs_buildpack
+    command: npm run db:migrate && npm run start
+    random-route: true
+    env:
+      NODE_ENV: production
+      XSUAA_ENABLED: "true"
+      BETTER_AUTH_SECRET: "uN2WnmFreHjniqeIYth7XFqs29/+YNflwWVAarDF+uE="
+    services:
+      - xsuaa-pg-nextjs-xsuaa
+      - xsuaa-pg-nextjs-postgres

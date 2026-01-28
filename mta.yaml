@@ -1,0 +1,46 @@
+_schema-version: "3.1"
+ID: xsuaa-pg-nextjs
+version: 1.0.0
+description: Next.js app with XSUAA and PostgreSQL
+
+parameters:
+  enable-parallel-deployments: true
+
+modules:
+  - name: xsuaa-pg-nextjs-app
+    type: nodejs
+    path: .
+    parameters:
+      memory: 512M
+      disk-quota: 2G
+      buildpack: nodejs_buildpack
+      command: npm run start
+    properties:
+      NODE_ENV: production
+      XSUAA_ENABLED: "true"
+      BETTER_AUTH_SECRET: "uN2WnmFreHjniqeIYth7XFqs29/+YNflwWVAarDF+uE="
+    build-parameters:
+      builder: npm
+      build-cmds:
+        - npm run build
+      ignore:
+        - node_modules/
+        - .env*
+        - .git/
+        - "*.md"
+        - docker-compose.yml
+        - mta_archives/
+    requires:
+      - name: xsuaa-pg-nextjs-xsuaa
+      - name: psql-dev
+
+resources:
+  - name: xsuaa-pg-nextjs-xsuaa
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xsuaa
+      service-plan: application
+      path: xs-security.json
+
+  - name: psql-dev
+    type: org.cloudfoundry.existing-service
