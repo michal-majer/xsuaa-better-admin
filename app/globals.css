@@ -1,15 +1,10 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -23,4 +18,107 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* SAP Button Animations */
+
+/* Button Entry */
+@keyframes button-enter {
+  0% { opacity: 0; transform: translateY(10px) scale(0.95); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Gradient Animation */
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Shimmer Effect */
+@keyframes shimmer {
+  0% { transform: translateX(-100%) rotate(25deg); }
+  100% { transform: translateX(200%) rotate(25deg); }
+}
+
+/* Glow Pulse */
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(0, 112, 242, 0.4), 0 0 40px rgba(0, 112, 242, 0.2), 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(0, 112, 242, 0.6), 0 0 60px rgba(0, 112, 242, 0.3), 0 8px 12px -2px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* Logo Float */
+@keyframes logo-float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-3px) scale(1.05); }
+}
+
+/* Text Pulse */
+@keyframes text-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* Progress Bar */
+@keyframes progress-bar {
+  0% { width: 0%; }
+  80% { width: 95%; }
+  100% { width: 100%; }
+}
+
+/* Border Progress */
+@keyframes border-progress {
+  0% { stroke-dashoffset: 1000; }
+  80% { stroke-dashoffset: 50; }
+  100% { stroke-dashoffset: 0; }
+}
+
+/* Ripple Effect */
+@keyframes ripple {
+  0% { transform: scale(0); opacity: 0.6; }
+  100% { transform: scale(4); opacity: 0; }
+}
+
+/* Logo Path Animations */
+@keyframes logo-path-1 {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+@keyframes logo-path-2 {
+  0%, 100% { opacity: 1; transform: translateY(0); }
+  50% { opacity: 0.7; transform: translateY(-1px); }
+}
+
+@keyframes logo-path-3 {
+  0%, 100% { opacity: 1; transform: translateY(0); }
+  50% { opacity: 0.7; transform: translateY(1px); }
+}
+
+/* Shimmer utility class */
+.sap-button-shimmer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transform: skewX(-25deg);
+  pointer-events: none;
+}
+
+.sap-button-shimmer:hover::before {
+  animation: shimmer 1.5s ease-in-out;
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }

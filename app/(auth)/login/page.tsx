@@ -23,6 +23,32 @@ function LoginForm() {
   const [error, setError] = useState(urlError ? errorMessages[urlError] || urlError : '');
   const [loading, setLoading] = useState(false);
   const [sapLoading, setSapLoading] = useState(false);
+  const [sapSuccess, setSapSuccess] = useState(false);
+
+  // Fake SAP login simulation for localhost
+  const handleSapLogin = () => {
+    setSapLoading(true);
+    setSapSuccess(false);
+
+    // Simulate a 3-second authentication process
+    setTimeout(() => {
+      setSapSuccess(true);
+
+      // Show success for 0.5 second then redirect or show error
+      setTimeout(() => {
+        // Check if running on localhost
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+          // For localhost, show success message instead of redirecting
+          alert('🎉 SAP Login Successful!\n\nIn production, this would redirect to SAP XSUAA for authentication.\n\nFor now, you can use the email/password login above.');
+          setSapLoading(false);
+          setSapSuccess(false);
+        } else {
+          // In production, redirect to actual SAP login
+          window.location.href = '/api/auth/xsuaa?action=login';
+        }
+      }, 500);
+    }, 2500);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,29 +132,107 @@ function LoginForm() {
       </div>
 
       <button
-        onClick={() => {
-          setSapLoading(true);
-          window.location.href = '/api/auth/xsuaa?action=login';
-        }}
+        onClick={handleSapLogin}
         disabled={sapLoading}
-        className="w-full flex items-center justify-center gap-2 py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-70 disabled:cursor-not-allowed transition-all duration-200"
+        className={`group relative w-full flex items-center justify-center gap-3 py-3 px-4 border-2 rounded-lg shadow-sm text-sm font-medium transition-all duration-600 ease-out animate-button-enter focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:cursor-not-allowed ${
+          sapLoading
+            ? 'border-[#1870c5] bg-gradient-to-r from-[#00b8f1] via-[#1870c5] to-[#1d61bc] text-white'
+            : 'border-gray-300 bg-white text-gray-700 hover:border-[#1870c5] hover:bg-gradient-to-r hover:from-[#00b8f1] hover:via-[#1870c5] hover:to-[#1d61bc] hover:text-white'
+        }`}
       >
+        {/* Progress border - only during loading */}
+        {sapLoading && (
+          <svg
+            className="absolute inset-0 w-full h-full pointer-events-none"
+            style={{ overflow: 'visible' }}
+          >
+            <rect
+              x="2"
+              y="2"
+              width="calc(100% - 4px)"
+              height="calc(100% - 4px)"
+              rx="7"
+              fill="none"
+              stroke="white"
+              strokeWidth="3"
+              strokeDasharray="1000"
+              strokeDashoffset="1000"
+              style={{
+                animation: 'border-progress 3s ease-out forwards'
+              }}
+            />
+          </svg>
+        )}
+
+        {/* Button content */}
         {sapLoading ? (
           <>
-            <svg className="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <span>Connecting to SAP...</span>
+            <span className="flex items-center gap-2">
+              {sapSuccess ? (
+                <span className="animate-text-pulse text-lg h-7 flex items-center">✓ Authenticated!</span>
+              ) : (
+                <>
+                  <span>Authenticating with</span>
+                  <svg
+                    className="h-7 w-auto flex-shrink-0 scale-125 animate-text-pulse transition-all duration-[2000ms] ease-in-out"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 120 60"
+                    style={{ display: 'block' }}
+                  >
+                    <defs>
+                      <linearGradient id="A" x1="42.046" y1="18.109" x2="42.046" y2="60.523" gradientUnits="userSpaceOnUse">
+                        <stop offset="0" stopColor="#00b8f1"/>
+                        <stop offset=".22" stopColor="#06a5e5"/>
+                        <stop offset=".79" stopColor="#1870c5"/>
+                        <stop offset="1" stopColor="#1d61bc"/>
+                      </linearGradient>
+                    </defs>
+                    <path
+                      d="M0 17.975V60h42.928l42.017-42.02H0z"
+                      fill="url(#A)"
+                      transform="matrix(1.12162 0 0 1.12162 16.361645 -13.729055)"
+                    />
+                    <path
+                      d="M74.48 28.368h-2.008v-7.342h2.01c2.683 0 4.818.883 4.818 3.626 0 2.833-2.136 3.72-4.818 3.72m-21.63 5.255c-.997.004-1.987-.17-2.923-.515l2.894-9.127h.06l2.836 9.153a8.52 8.52 0 0 1-2.865.492M73.95 15.056h-9.13V36.76l-7.973-21.704h-7.9l-6.81 18.142c-.72-4.567-5.455-6.152-9.18-7.336-2.454-.8-5.067-1.95-5.044-3.235.02-1.05 1.404-2.026 4.13-1.88 1.838.093 3.473.24 6.676 1.797l3.183-5.522c-2.937-1.5-7.006-2.442-10.337-2.448h-.032c-3.884 0-7.12 1.265-9.127 3.34a7.72 7.72 0 0 0-2.185 5.325c-.052 2.796.978 4.78 3.134 6.367 1.823 1.337 4.15 2.196 6.205 2.842 2.535.778 4.604 1.464 4.58 2.923-.015.532-.23 1.038-.602 1.418-.63.65-1.6.9-2.943.932-2.587.052-4.503-.35-7.56-2.156l-2.82 5.594c3.148 1.788 6.703 2.733 10.323 2.746h.477c3.2-.06 5.788-.975 7.854-2.636l.336-.29-.903 2.44h8.285l1.392-4.234c3.127 1.012 6.492 1.026 9.628.04l1.34 4.196H72.47v-8.75h2.952c7.125 0 11.344-3.626 11.344-9.712 0-6.775-4.1-9.883-12.82-9.883"
+                      fill="#fff"
+                    />
+                  </svg>
+                </>
+              )}
+            </span>
           </>
         ) : (
           <>
-            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="#0070F2"/>
-              <path d="M2 17L12 22L22 17" stroke="#0070F2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M2 12L12 17L22 12" stroke="#0070F2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <span className="leading-none transition-colors duration-600 group-hover:text-white">Sign in with</span>
+            {/* Official SAP Logo - Blue expands on hover */}
+            <svg
+              className="h-7 w-auto flex-shrink-0 relative z-10 transition-all duration-600 ease-out group-hover:scale-150"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 120 60"
+              style={{ display: 'block' }}
+            >
+              <defs>
+                <linearGradient id="A" x1="42.046" y1="18.109" x2="42.046" y2="60.523" gradientUnits="userSpaceOnUse">
+                  <stop offset="0" stopColor="#00b8f1"/>
+                  <stop offset=".22" stopColor="#06a5e5"/>
+                  <stop offset=".79" stopColor="#1870c5"/>
+                  <stop offset="1" stopColor="#1d61bc"/>
+                </linearGradient>
+              </defs>
+              {/* Blue background shape - hides on hover since button becomes blue */}
+              <path
+                className="transition-all duration-600 ease-out group-hover:opacity-0"
+                d="M0 17.975V60h42.928l42.017-42.02H0z"
+                fill="url(#A)"
+                transform="matrix(1.12162 0 0 1.12162 16.361645 -13.729055)"
+              />
+              {/* White SAP text - stays on top */}
+              <path
+                className="transition-all duration-600"
+                d="M74.48 28.368h-2.008v-7.342h2.01c2.683 0 4.818.883 4.818 3.626 0 2.833-2.136 3.72-4.818 3.72m-21.63 5.255c-.997.004-1.987-.17-2.923-.515l2.894-9.127h.06l2.836 9.153a8.52 8.52 0 0 1-2.865.492M73.95 15.056h-9.13V36.76l-7.973-21.704h-7.9l-6.81 18.142c-.72-4.567-5.455-6.152-9.18-7.336-2.454-.8-5.067-1.95-5.044-3.235.02-1.05 1.404-2.026 4.13-1.88 1.838.093 3.473.24 6.676 1.797l3.183-5.522c-2.937-1.5-7.006-2.442-10.337-2.448h-.032c-3.884 0-7.12 1.265-9.127 3.34a7.72 7.72 0 0 0-2.185 5.325c-.052 2.796.978 4.78 3.134 6.367 1.823 1.337 4.15 2.196 6.205 2.842 2.535.778 4.604 1.464 4.58 2.923-.015.532-.23 1.038-.602 1.418-.63.65-1.6.9-2.943.932-2.587.052-4.503-.35-7.56-2.156l-2.82 5.594c3.148 1.788 6.703 2.733 10.323 2.746h.477c3.2-.06 5.788-.975 7.854-2.636l.336-.29-.903 2.44h8.285l1.392-4.234c3.127 1.012 6.492 1.026 9.628.04l1.34 4.196H72.47v-8.75h2.952c7.125 0 11.344-3.626 11.344-9.712 0-6.775-4.1-9.883-12.82-9.883"
+                fill="#fff"
+              />
             </svg>
-            <span>Sign in with SAP</span>
           </>
         )}
       </button>
